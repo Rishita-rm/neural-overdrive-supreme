@@ -7,15 +7,6 @@ Unlike classic trivia apps with static question banks, Neural Overdrive Supreme 
 
 ---
 
-## Demo / Screenshots
-
-> Add screenshots or a short demo clip here.
-
-- `./public/demo-1.png`
-- `./public/demo-2.png`
-
----
-
 ## Why This Exists (Problem → Solution)
 
 ### Problem
