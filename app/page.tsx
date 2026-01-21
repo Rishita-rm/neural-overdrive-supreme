@@ -40,7 +40,7 @@ import {
   ArrowRight,
   Radiation,
   Copy,
-  Trophy, // Added Trophy to imports
+  Trophy,
 } from "lucide-react";
 import confetti from "canvas-confetti";
 import { GoogleGenerativeAI } from "@google/generative-ai";
@@ -64,7 +64,6 @@ interface Shout {
   msg: string;
 }
 
-// Named interface differently to avoid collision with Lucide icon
 interface NeuralGhost {
   id: number;
   word: string;
@@ -189,7 +188,7 @@ const PlayerAvatar: React.FC<AvatarProps> = ({
         style={{
           width: size,
           height: size,
-          backgroundColor: `${color}33`,
+          backgroundColor: `${color}44`,
           borderColor: color,
         }}
       >
@@ -610,17 +609,18 @@ export default function App() {
   }, [gameState, playPulse]);
 
   return (
-    <div className="relative min-h-screen w-full bg-[#050a15] text-white font-mono flex flex-col scroll-smooth">
-      {/* Background Layers */}
+    // changed relative min-h-screen to fixed inset-0 with overflow-y-auto to ensure scroll works in all containers
+    <div className="fixed inset-0 bg-[#050a15] text-white font-mono flex flex-col overflow-y-auto scroll-smooth selection:bg-cyan-500">
+      {/* Background Layers - Fixed behind content */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
         <motion.div
           animate={{ x: mousePos.x, y: mousePos.y }}
-          className="absolute -top-1/4 -left-1/4 w-[150%] h-[150%] rounded-full blur-[200px] opacity-40"
+          className="absolute -top-1/4 -left-1/4 w-[150%] h-[150%] rounded-full blur-[200px] opacity-30"
           style={{
             backgroundImage: `radial-gradient(circle, ${currentPrompt.color}, transparent)`,
           }}
         />
-        <div className="absolute inset-0 bg-[#050a15]/60 backdrop-blur-[1px]" />
+        <div className="absolute inset-0 bg-[#050a15]/80 backdrop-blur-[1px]" />
         <motion.div
           animate={{
             rotateX: streak > 10 ? 65 : 45,
@@ -628,8 +628,8 @@ export default function App() {
           }}
           className="absolute inset-0 z-1"
           style={{
-            backgroundImage: `linear-gradient(${currentPrompt.color}22 1px, transparent 1px), linear-gradient(90deg, ${currentPrompt.color}22 1px, transparent 1px)`,
-            backgroundSize: "80px 80px",
+            backgroundImage: `linear-gradient(${currentPrompt.color}11 1px, transparent 1px), linear-gradient(90deg, ${currentPrompt.color}11 1px, transparent 1px)`,
+            backgroundSize: "60px 60px",
             transform: "perspective(1000px)",
           }}
         />
@@ -643,15 +643,15 @@ export default function App() {
             <motion.div
               key={s.id}
               initial={{ y: 100, opacity: 0, scale: 0.5 }}
-              animate={{ y: -200, opacity: [0, 1, 1, 0], scale: 1.2 }}
+              animate={{ y: -200, opacity: [0, 1, 1, 0], scale: 1.1 }}
               transition={{ duration: 3 }}
               className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center gap-1"
             >
-              <div className="bg-white text-black px-4 py-2 rounded-xl font-black text-xl skew-x-[-12deg] shadow-[8px_8px_0px_#000] border-2 border-cyan-500 uppercase">
+              <div className="bg-white text-black px-4 py-1.5 rounded-lg font-black text-lg skew-x-[-10deg] shadow-[6px_6px_0px_#000] border-2 border-cyan-500 uppercase">
                 {String(s.msg)}
               </div>
-              <div className="text-[10px] font-black uppercase text-cyan-400 bg-black/80 px-2 py-0.5 rounded text-center tracking-widest uppercase">
-                FROM: {String(s.username)}
+              <div className="text-[9px] font-black uppercase text-cyan-400 bg-black/80 px-2 py-0.5 rounded text-center tracking-widest uppercase">
+                SENDER: {String(s.username)}
               </div>
             </motion.div>
           ))}
@@ -686,34 +686,35 @@ export default function App() {
         )}
       </AnimatePresence>
 
+      {/* Main UI Container */}
       <div
-        className="relative z-10 w-full flex flex-col min-h-screen"
+        className="relative z-10 w-full flex flex-col min-h-full"
         onMouseMove={(e) =>
           setMousePos({
-            x: (e.clientX / window.innerWidth - 0.5) * 30,
-            y: (e.clientY / window.innerHeight - 0.5) * 30,
+            x: (e.clientX / window.innerWidth - 0.5) * 40,
+            y: (e.clientY / window.innerHeight - 0.5) * 40,
           })
         }
       >
         {/* HUD Navigation */}
-        <nav className="sticky top-0 z-50 p-3 md:p-4 flex flex-wrap justify-between items-center bg-slate-900/80 backdrop-blur-2xl border-b border-white/10 shadow-lg gap-3">
+        <nav className="sticky top-0 z-50 p-3 md:p-4 flex flex-wrap justify-between items-center bg-slate-900/80 backdrop-blur-2xl border-b border-white/10 shadow-lg gap-4">
           <div className="flex items-center gap-2 md:gap-3 text-left">
             <PlayerAvatar
               seed={String(username)}
-              size={42}
+              size={40}
               progress={(answers.length / 5) * 100}
             />
             <div>
-              <div className="text-[12px] md:text-[14px] text-cyan-400 font-black tracking-widest uppercase truncate max-w-[100px]">
+              <div className="text-[11px] md:text-[13px] text-cyan-400 font-black tracking-widest uppercase truncate max-w-[100px]">
                 {String(username || "OPERATOR")}
               </div>
-              <div className="flex items-center gap-2 mt-0.5 text-left text-left">
-                <div className="flex items-center gap-1 bg-cyan-500/20 px-1.5 rounded-full border border-cyan-500/30 text-[9px] font-black uppercase">
+              <div className="flex items-center gap-2 mt-0.5 text-left">
+                <div className="flex items-center gap-1 bg-cyan-500/20 px-1.5 rounded-full border border-cyan-500/30 text-[8px] font-black uppercase tracking-widest">
                   L{String(currentLevel)}
                 </div>
                 <div className="flex items-center gap-1">
                   <Wifi size={10} className="text-green-500" />
-                  <span className="text-[9px] font-bold text-white/50 uppercase">
+                  <span className="text-[8px] font-bold text-white/50 uppercase tracking-widest">
                     ACTIVE
                   </span>
                 </div>
@@ -721,8 +722,8 @@ export default function App() {
             </div>
           </div>
 
-          <div className="order-3 md:order-2 w-full md:w-auto text-center bg-white/5 px-5 py-1.5 rounded-full border border-white/10">
-            <div className="text-[7px] md:text-[8px] text-white/30 uppercase tracking-[0.3em] mb-0.5 uppercase tracking-widest text-center">
+          <div className="order-3 md:order-2 w-full md:w-auto text-center bg-white/5 px-4 py-1.5 rounded-full border border-white/10">
+            <div className="text-[7px] md:text-[8px] text-white/30 uppercase tracking-[0.3em] mb-0.5 tracking-widest">
               SCORE_INDEX
             </div>
             <div
@@ -736,31 +737,31 @@ export default function App() {
           <div className="flex gap-2 items-center order-2 md:order-3">
             <button
               onClick={() => setShowHelp(true)}
-              className="p-2.5 bg-white/5 hover:bg-white/10 rounded-xl border border-white/5 transition-all shadow text-cyan-400"
+              className="p-2 bg-white/5 hover:bg-white/10 rounded-xl border border-white/5 transition-all text-cyan-400 shadow-md"
             >
               <HelpCircle size={18} />
             </button>
             <button
               onClick={() => setIsMuted(!isMuted)}
-              className="p-2.5 bg-white/5 hover:bg-white/10 rounded-xl border border-white/5 transition-all text-white shadow"
+              className="p-2 bg-white/5 hover:bg-white/10 rounded-xl border border-white/5 transition-all text-white shadow-md"
             >
               {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
             </button>
           </div>
         </nav>
 
-        {/* Scrollable Game Body */}
-        <main className="flex-grow flex flex-col items-center justify-center px-4 md:px-6 py-8 w-full">
+        {/* Dynamic Game Body */}
+        <main className="flex-grow flex flex-col items-center justify-start px-4 md:px-6 py-12 relative w-full overflow-x-hidden">
           {gameState === "IDLE" && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="text-center max-w-4xl py-6"
+              className="text-center max-w-4xl py-6 my-auto text-center"
             >
               <motion.div
                 animate={
                   {
-                    scale: [1, 1.03],
+                    scale: [1, 1.05],
                     transition: {
                       duration: 2,
                       repeat: Infinity,
@@ -768,12 +769,12 @@ export default function App() {
                     },
                   } as any
                 }
-                className="inline-flex items-center gap-2 mb-6 px-5 py-1.5 bg-cyan-500/10 border border-cyan-500/20 rounded-full text-white text-[10px] md:text-[12px] font-black uppercase tracking-[0.3em] backdrop-blur-2xl shadow-[0_0_20px_rgba(6,182,212,0.2)] uppercase"
+                className="inline-flex items-center gap-2 mb-6 px-4 py-1.5 bg-cyan-500/10 border border-cyan-500/20 rounded-full text-white text-[10px] md:text-[11px] font-black uppercase tracking-[0.3em] backdrop-blur-2xl shadow-[0_0_20px_rgba(6,182,212,0.2)] text-center"
               >
                 <ShieldCheck className="text-cyan-400 w-4 h-4 md:w-5 md:h-5" />{" "}
-                Link_Stabilized
+                System_Ready_For_Sync
               </motion.div>
-              <h1 className="text-4xl md:text-[8vw] font-black italic leading-none tracking-tighter mb-12 md:mb-16 uppercase text-white drop-shadow-[0_0_50px_rgba(255,255,255,0.15)] text-center">
+              <h1 className="text-3xl md:text-6xl lg:text-7xl font-black italic leading-none tracking-tighter mb-10 md:mb-14 uppercase text-white drop-shadow-[0_0_60px_rgba(255,255,255,0.2)] text-center">
                 Neural
                 <br />
                 <span
@@ -789,7 +790,7 @@ export default function App() {
                     init();
                     setGameState("LOBBY");
                   }}
-                  className="group relative px-8 md:px-14 py-5 md:py-8 bg-white text-black font-black text-xl md:text-3xl hover:bg-cyan-500 hover:text-white transition-all skew-x-[-12deg] shadow-[15px_15px_0px_#000] border-4 border-black uppercase italic active:scale-95 overflow-hidden"
+                  className="group relative px-8 md:px-16 py-4 md:py-8 bg-white text-black font-black text-xl md:text-3xl hover:bg-cyan-500 hover:text-white transition-all skew-x-[-12deg] shadow-[15px_15px_0px_#000] border-4 md:border-8 border-black uppercase italic active:scale-95 overflow-hidden text-center"
                 >
                   Initialize_Sync
                 </button>
@@ -801,7 +802,7 @@ export default function App() {
             <motion.div
               initial={{ y: 50, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              className="w-full max-w-lg bg-slate-900/60 border border-white/10 p-6 md:p-10 rounded-[3rem] md:rounded-[4rem] backdrop-blur-3xl shadow-2xl relative my-6 border-t-white/20 text-white text-left text-left"
+              className="w-full max-w-md bg-slate-900/60 border border-white/10 p-6 md:p-10 rounded-[2.5rem] md:rounded-[4rem] backdrop-blur-3xl shadow-2xl relative my-6 border-t-white/30 text-white text-left"
             >
               <div className="flex items-center gap-4 mb-8 border-b border-white/10 pb-6 text-left">
                 {lobbyMode && (
@@ -810,18 +811,18 @@ export default function App() {
                       setLobbyMode(null);
                       setRoomCode("");
                     }}
-                    className="p-2 bg-white/5 hover:bg-white/10 rounded-xl mr-2 text-cyan-400 shadow-lg"
+                    className="p-2 bg-white/5 hover:bg-white/10 rounded-xl mr-2 text-cyan-400"
                   >
                     <ChevronLeft size={20} />
                   </button>
                 )}
                 <Server size={28} className="text-cyan-400" />
-                <h2 className="text-xl md:text-2xl font-black uppercase italic tracking-widest uppercase text-left">
+                <h2 className="text-xl md:text-2xl font-black uppercase italic tracking-widest text-left text-white">
                   Sector_Config
                 </h2>
               </div>
               {!lobbyMode ? (
-                <div className="grid gap-5 md:gap-7 text-left">
+                <div className="grid gap-4 md:gap-8 text-left">
                   <button
                     onClick={() => {
                       setRoomCode(
@@ -830,13 +831,13 @@ export default function App() {
                       setLobbyMode("HOST");
                       prefetch();
                     }}
-                    className="w-full group p-6 md:p-8 bg-white/5 border border-white/10 rounded-[2.5rem] flex items-center justify-between hover:bg-white hover:text-black transition-all text-left"
+                    className="w-full group p-5 md:p-8 bg-white/5 border border-white/10 rounded-[2rem] flex items-center justify-between hover:bg-white hover:text-black transition-all text-left"
                   >
                     <div>
-                      <div className="text-[12px] font-black uppercase opacity-30 mb-1 tracking-widest text-left text-left">
+                      <div className="text-[10px] font-black uppercase opacity-40 mb-0.5 text-left">
                         Option_A
                       </div>
-                      <div className="text-xl md:text-2xl font-black italic uppercase text-left text-left">
+                      <div className="text-lg md:text-xl font-black italic uppercase text-left">
                         Host_Sector
                       </div>
                     </div>
@@ -850,13 +851,13 @@ export default function App() {
                       setLobbyMode("JOIN");
                       prefetch();
                     }}
-                    className="w-full group p-6 md:p-8 bg-white/5 border border-white/10 rounded-[2.5rem] flex items-center justify-between hover:bg-cyan-500 transition-all text-left shadow-2xl text-white hover:text-black"
+                    className="w-full group p-5 md:p-8 bg-white/5 border border-white/10 rounded-[2rem] flex items-center justify-between hover:bg-cyan-500 transition-all text-left shadow-2xl text-white hover:text-black"
                   >
                     <div>
-                      <div className="text-[12px] font-black uppercase mb-1 opacity-40 uppercase tracking-widest text-left text-left">
+                      <div className="text-[10px] font-black uppercase mb-0.5 opacity-60 text-left">
                         Option_B
                       </div>
-                      <div className="text-xl md:text-2xl font-black italic uppercase text-inherit text-left text-left text-left text-left">
+                      <div className="text-lg md:text-xl font-black italic uppercase text-inherit text-left text-left">
                         Join_Sector
                       </div>
                     </div>
@@ -864,15 +865,15 @@ export default function App() {
                   </button>
                 </div>
               ) : (
-                <div className="space-y-8 text-left text-left">
-                  <div className="space-y-2 text-left text-left text-left">
-                    <label className="text-[10px] md:text-[12px] font-black text-white/30 uppercase block ml-3 tracking-widest uppercase text-left text-left text-left">
+                <div className="space-y-8 text-left">
+                  <div className="space-y-2 text-left">
+                    <label className="text-[10px] md:text-[11px] font-black text-white/40 uppercase block ml-3 tracking-widest uppercase text-left">
                       Operator_Handle
                     </label>
-                    <div className="relative text-left text-left text-left">
+                    <div className="relative text-left">
                       <User
-                        size={20}
-                        className="absolute left-6 top-1/2 -translate-y-1/2 text-cyan-500/30"
+                        size={24}
+                        className="absolute left-4 top-1/2 -translate-y-1/2 text-cyan-500/40"
                       />
                       <input
                         value={username}
@@ -880,17 +881,17 @@ export default function App() {
                           setUsername(e.target.value.toUpperCase().slice(0, 12))
                         }
                         placeholder="NAME..."
-                        className="w-full bg-white/5 border border-white/10 p-5 md:p-6 pl-14 rounded-[2rem] focus:outline-none focus:border-cyan-500 font-bold uppercase text-white text-xl md:text-2xl tracking-widest shadow-inner text-left text-left text-left text-left"
+                        className="w-full bg-white/5 border border-white/10 p-4 md:p-6 pl-12 rounded-[1.5rem] md:rounded-[2.5rem] focus:outline-none focus:border-cyan-500 font-bold uppercase text-white text-lg md:text-xl tracking-widest shadow-inner text-left text-white"
                       />
                     </div>
                   </div>
                   {lobbyMode === "HOST" ? (
-                    <div className="space-y-2 text-left text-left text-left text-left">
-                      <label className="text-[10px] md:text-[12px] font-black text-white/30 uppercase block ml-3 tracking-widest uppercase text-left text-left text-left text-left">
+                    <div className="space-y-2 text-left text-white">
+                      <label className="text-[10px] md:text-[11px] font-black text-white/40 uppercase block ml-3 tracking-widest uppercase text-left">
                         Sector_Code
                       </label>
-                      <div className="flex items-center justify-between bg-cyan-500/5 border border-cyan-500/10 p-5 rounded-[2rem] shadow-inner text-white text-left text-left text-left">
-                        <span className="text-2xl md:text-3xl font-black tracking-[0.4em] text-cyan-400 text-left text-left">
+                      <div className="flex items-center justify-between bg-cyan-500/10 border border-cyan-500/20 p-4 rounded-[1.5rem] md:rounded-[2.5rem] shadow-inner text-white text-left">
+                        <span className="text-xl md:text-3xl font-black tracking-[0.4em] text-cyan-400 text-left">
                           {String(roomCode)}
                         </span>
                         <button
@@ -899,15 +900,15 @@ export default function App() {
                             setIsCopied(true);
                             setTimeout(() => setIsCopied(false), 2000);
                           }}
-                          className="p-3 bg-cyan-500/10 hover:bg-cyan-500 hover:text-black rounded-xl transition-all text-cyan-400 shadow-xl text-left"
+                          className="p-3 bg-cyan-500/20 hover:bg-cyan-500 hover:text-black rounded-xl transition-all text-cyan-400 shadow-xl"
                         >
                           {isCopied ? <Check size={24} /> : <Copy size={24} />}
                         </button>
                       </div>
                     </div>
                   ) : (
-                    <div className="space-y-2 text-left text-left text-left text-left">
-                      <label className="text-[10px] md:text-[12px] font-black text-white/30 uppercase block ml-3 tracking-widest uppercase text-left text-left text-left text-left">
+                    <div className="space-y-2 text-left text-white">
+                      <label className="text-[10px] md:text-[11px] font-black text-white/40 uppercase block ml-3 tracking-widest uppercase text-left text-left">
                         Sector_Key
                       </label>
                       <input
@@ -916,13 +917,13 @@ export default function App() {
                           setRoomCode(e.target.value.toUpperCase().slice(0, 8))
                         }
                         placeholder="PASTE_KEY..."
-                        className="w-full bg-white/5 border border-white/10 p-5 md:p-6 rounded-[2rem] focus:outline-none focus:border-cyan-500 font-bold uppercase text-white text-xl md:text-2xl tracking-widest shadow-inner text-left text-left text-left text-left"
+                        className="w-full bg-white/5 border border-white/10 p-4 md:p-6 rounded-[1.5rem] md:rounded-[2.5rem] focus:outline-none focus:border-cyan-500 font-bold uppercase text-white text-lg md:text-xl tracking-widest shadow-inner text-left text-white"
                       />
                     </div>
                   )}
                   <button
                     onClick={handleConnect}
-                    className="w-full p-8 md:p-10 bg-cyan-500 text-black font-black uppercase tracking-[0.1em] rounded-[3rem] hover:bg-white transition-all text-xl md:text-2xl italic shadow-[0_20px_60px_rgba(6,182,212,0.3)] active:scale-95 text-center text-center"
+                    className="w-full p-6 md:p-8 bg-cyan-500 text-black font-black uppercase tracking-[0.1em] rounded-[2rem] md:rounded-[3rem] hover:bg-white transition-all text-lg md:text-xl italic shadow-xl active:scale-95 text-center"
                   >
                     Establish_Uplink
                   </button>
@@ -935,68 +936,68 @@ export default function App() {
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="w-full max-w-4xl bg-slate-900/60 border border-white/20 p-6 md:p-12 rounded-[3rem] md:rounded-[5rem] backdrop-blur-3xl text-center shadow-2xl my-4 text-white text-left text-left text-left"
+              className="w-full max-w-4xl bg-slate-900/80 border border-white/20 p-6 md:p-10 rounded-[2.5rem] md:rounded-[4rem] backdrop-blur-3xl text-center shadow-2xl my-6 text-white text-left"
             >
-              <div className="flex items-center justify-between mb-10 text-left border-b border-white/10 pb-8 text-left text-left text-left text-left">
+              <div className="flex items-center justify-between mb-12 text-left border-b border-white/10 pb-10 text-left">
                 <button
                   onClick={() => {
                     socketRef.current?.disconnect();
                     setGameState("LOBBY");
                   }}
-                  className="p-3 bg-red-500/10 hover:bg-red-500/20 rounded-2xl transition-all text-red-500 shadow border border-red-500/10 text-left text-left"
+                  className="p-3 bg-red-500/10 hover:bg-red-500/20 rounded-2xl transition-all text-red-500 shadow-xl border border-red-500/20 text-left"
                 >
-                  <ChevronLeft size={28} />
+                  <ChevronLeft size={36} />
                 </button>
                 <div>
-                  <h2 className="text-3xl md:text-4xl font-black italic uppercase tracking-tighter mb-1 text-center md:text-left text-left text-left text-left">
+                  <h2 className="text-3xl md:text-4xl font-black italic uppercase tracking-tighter mb-2 text-center md:text-left text-left text-white">
                     Sync_Pool
                   </h2>
-                  <div className="text-cyan-400 text-[12px] md:text-[14px] font-black tracking-[0.3em] uppercase bg-cyan-500/5 px-5 py-1.5 rounded-full border border-cyan-500/10 shadow-inner text-center md:text-left tracking-widest uppercase text-left text-left text-left">
+                  <div className="text-cyan-400 text-[12px] md:text-[14px] font-black tracking-[0.3em] uppercase bg-cyan-500/10 px-6 py-1.5 rounded-full border border-cyan-500/20 shadow-inner text-center md:text-left tracking-widest uppercase text-left">
                     Sector: {String(roomCode)}
                   </div>
                 </div>
-                <div className="w-10" />
+                <div className="w-12" />
               </div>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-5 md:gap-8 mb-12 text-left text-left">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-6 md:gap-14 mb-16 text-left">
                 {players.map((p, i) => (
                   <div
                     key={i}
-                    className="p-6 md:p-8 bg-white/5 border border-white/10 rounded-[3rem] flex flex-col items-center gap-4 relative group shadow backdrop-blur-sm transition-all hover:bg-white/10"
+                    className="p-8 md:p-12 bg-white/5 border border-white/10 rounded-[4rem] flex flex-col items-center gap-6 relative overflow-hidden group shadow-xl backdrop-blur-md transition-all hover:bg-white/10"
                   >
                     <PlayerAvatar
                       seed={String(p.name)}
-                      size={60}
+                      size={80}
                       status={String(p.status)}
                     />
-                    <span className="text-sm md:text-lg font-black uppercase truncate w-full tracking-widest drop-shadow-md text-center text-center">
+                    <span className="text-lg md:text-2xl font-black uppercase truncate w-full tracking-widest drop-shadow-md text-center text-white">
                       {String(p.name)}
                     </span>
-                    <div className="absolute top-4 right-4 w-2 h-2 bg-green-500 rounded-full animate-ping" />
+                    <div className="absolute top-6 right-6 w-3 h-3 bg-green-500 rounded-full animate-ping shadow-[0_0_20px_#22c55e]" />
                   </div>
                 ))}
                 {Array.from({ length: Math.max(0, 3 - players.length) }).map(
                   (_, i) => (
                     <div
                       key={i}
-                      className="p-6 md:p-8 border-2 border-dashed border-white/10 rounded-[3rem] flex flex-col items-center justify-center opacity-20 text-white/50 text-left text-left text-left text-left"
+                      className="p-8 md:p-12 border-4 border-dashed border-white/10 rounded-[4rem] flex flex-col items-center justify-center opacity-20 text-white/50 text-left text-left text-left text-white"
                     >
                       <Loader2
-                        className="animate-spin mb-3 text-center mx-auto"
-                        size={32}
+                        className="animate-spin mb-4 text-center mx-auto"
+                        size={40}
                       />
-                      <span className="text-xs font-black uppercase tracking-widest uppercase tracking-widest block text-center text-center text-center">
+                      <span className="text-lg font-black uppercase tracking-widest uppercase tracking-widest block text-center text-center">
                         Syncing...
                       </span>
                     </div>
                   )
                 )}
               </div>
-              <div className="flex flex-col md:flex-row gap-6 md:gap-8 text-center text-center justify-center">
+              <div className="flex flex-col md:flex-row gap-8 md:gap-10 text-center">
                 <button
                   onClick={toggleReady}
-                  className={`flex-1 p-8 md:p-10 rounded-[2.5rem] font-black text-xl md:text-2xl uppercase italic transition-all shadow-xl text-center text-center ${
+                  className={`flex-1 p-10 md:p-14 rounded-[3rem] md:rounded-[4rem] font-black text-2xl md:text-4xl uppercase italic transition-all shadow-2xl text-center ${
                     isReady
-                      ? "bg-green-500 text-black border-2 border-black scale-105"
+                      ? "bg-green-500 text-black border-4 border-black scale-105"
                       : "bg-white/5 border-4 border-white/20 text-white hover:bg-white/10"
                   }`}
                 >
@@ -1004,7 +1005,7 @@ export default function App() {
                 </button>
                 <button
                   onClick={handleHostStart}
-                  className="flex-1 p-8 md:p-10 bg-white text-black font-black uppercase rounded-[2.5rem] hover:bg-cyan-500 hover:text-white transition-all text-xl md:text-2xl italic shadow-[0_0_80px_rgba(255,255,255,0.15)] active:scale-95 text-center text-center"
+                  className="flex-1 p-10 md:p-14 bg-white text-black font-black uppercase rounded-[3rem] md:rounded-[4rem] hover:bg-cyan-500 hover:text-white transition-all text-2xl md:text-4xl italic shadow-[0_0_120px_rgba(255,255,255,0.2)] active:scale-95 text-center"
                 >
                   Initiate_Sector
                 </button>
@@ -1015,54 +1016,54 @@ export default function App() {
           {gameState === "PLAYING" && (
             <motion.div
               animate={mainControls}
-              className="w-full space-y-8 md:space-y-12 flex flex-col items-center py-4 text-center"
+              className="w-full space-y-6 md:space-y-10 flex flex-col items-center py-6 text-center"
             >
               <div className="w-full max-w-xl relative px-4 text-left text-left">
-                <div className="flex justify-between text-[9px] md:text-[11px] font-black text-white/30 uppercase mb-3 px-2 tracking-[0.2em] uppercase tracking-widest text-left text-left text-left text-left">
-                  <div className="flex items-center gap-2 md:gap-3 text-left text-left text-left">
+                <div className="flex justify-between text-[11px] font-black text-white/40 uppercase mb-4 px-4 tracking-[0.3em] text-left text-left text-white">
+                  <div className="flex items-center gap-3 text-left">
                     <Radiation
-                      size={14}
+                      size={18}
                       className="animate-spin text-cyan-400"
                     />{" "}
-                    Neural_Integrity
+                    Neural_Stability
                   </div>
-                  <div className="flex items-center gap-2 text-cyan-400 font-black uppercase tracking-[0.1em] italic tracking-widest text-left text-left text-left">
-                    <TrendingUp size={12} /> LEVEL 0{String(currentLevel)}
+                  <div className="flex items-center gap-4 text-cyan-400 font-black uppercase tracking-[0.2em] italic tracking-widest text-left">
+                    LEVEL 0{String(currentLevel)}
                   </div>
                 </div>
-                <div className="h-2.5 md:h-3.5 w-full bg-slate-950 border-2 border-white/10 rounded-full overflow-hidden shadow-inner">
+                <div className="h-4 w-full bg-slate-950 border-4 border-white/10 rounded-full overflow-hidden shadow-inner">
                   <motion.div
                     animate={{
                       width: `${integrity}%`,
                       backgroundColor:
                         integrity < 30 ? "#ff003c" : currentPrompt.color,
                     }}
-                    className="h-full shadow-[0_0_25px_rgba(0,243,255,0.8)] transition-colors duration-500"
+                    className="h-full shadow-[0_0_50px_rgba(0,243,255,1)] transition-colors duration-500"
                   />
                 </div>
               </div>
 
-              <div className="text-center w-full px-4 md:px-6 text-center">
-                <div className="inline-flex items-center gap-2 mb-4 px-6 py-1.5 bg-white/5 border border-white/10 rounded-full text-white/40 text-[10px] md:text-[13px] font-black tracking-[0.4em] backdrop-blur-xl italic uppercase shadow uppercase text-center text-center tracking-widest text-center text-center">
-                  <ScanSearch size={18} className="text-cyan-400" />{" "}
+              <div className="text-center w-full px-4 md:px-6 text-center text-white">
+                <div className="inline-flex items-center gap-3 mb-6 px-8 py-2 bg-white/5 border-2 border-white/10 rounded-full text-white/60 text-[12px] md:text-[16px] font-black tracking-[0.6em] backdrop-blur-3xl italic uppercase shadow-2xl text-center">
+                  <ScanSearch size={24} className="text-cyan-400" />{" "}
                   Current_Sector
                 </div>
                 <h2
-                  className="text-3xl md:text-5xl lg:text-7xl font-black italic uppercase tracking-tighter leading-none text-white transition-all duration-300 break-words uppercase text-center text-center tracking-tighter text-center text-center"
-                  style={{ textShadow: `0 0 60px ${currentPrompt.color}` }}
+                  className="text-2xl md:text-4xl lg:text-5xl font-black italic uppercase tracking-tighter leading-none text-white transition-all duration-300 break-words uppercase text-center"
+                  style={{ textShadow: `0 0 100px ${currentPrompt.color}` }}
                 >
                   {isSyncing ? "UPLINKING..." : String(currentPrompt.text)}
                 </h2>
               </div>
 
-              <div className="relative w-40 h-40 md:w-56 md:h-56 flex items-center justify-center shrink-0 text-white text-center text-center text-center">
+              <div className="relative w-40 h-40 md:w-56 md:h-56 flex items-center justify-center shrink-0 text-white text-center text-center">
                 <svg className="absolute inset-0 w-full h-full -rotate-90">
                   <circle
                     cx="50%"
                     cy="50%"
                     r="45%"
                     stroke="rgba(255,255,255,0.05)"
-                    strokeWidth="4"
+                    strokeWidth="8"
                     fill="none"
                   />
                   <motion.circle
@@ -1070,7 +1071,7 @@ export default function App() {
                     cy="50%"
                     r="45%"
                     stroke={timeLeft <= 5 ? "#ff003c" : currentPrompt.color}
-                    strokeWidth={timeLeft <= 5 ? 12 : 8}
+                    strokeWidth={timeLeft <= 5 ? 28 : 24}
                     fill="none"
                     strokeLinecap="round"
                     strokeDasharray="283"
@@ -1084,7 +1085,7 @@ export default function App() {
                     animate={
                       timeLeft <= 5
                         ? {
-                            scale: [1, 1.3],
+                            scale: [1, 1.4],
                             transition: {
                               duration: 0.1,
                               repeat: Infinity,
@@ -1093,7 +1094,7 @@ export default function App() {
                           }
                         : {}
                     }
-                    className={`text-6xl md:text-8xl font-black tabular-nums transition-all ${
+                    className={`text-6xl md:text-7xl font-black tabular-nums transition-all ${
                       timeLeft <= 5 ? "text-red-500" : "text-white"
                     }`}
                   >
@@ -1102,10 +1103,10 @@ export default function App() {
                 </div>
               </div>
 
-              <div className="w-full max-w-4xl relative text-center px-4 md:px-6 text-center text-center text-center">
+              <div className="w-full max-w-4xl relative text-center px-4 md:px-6 text-center text-white">
                 <form
                   onSubmit={handleSubmit}
-                  className="relative z-10 text-center text-center text-center text-center"
+                  className="relative z-10 text-center"
                 >
                   <input
                     autoFocus
@@ -1113,11 +1114,11 @@ export default function App() {
                     value={input}
                     onChange={(e) => {
                       setInput(e.target.value);
-                      playPulse(500, 0.02, 0.02);
+                      playPulse(500, 0.03, 0.02);
                     }}
-                    className={`w-full bg-transparent border-b-4 md:border-b-8 border-white/5 pb-4 md:pb-6 text-3xl md:text-6xl font-black text-center text-center focus:outline-none transition-all uppercase placeholder:opacity-5 focus:border-cyan-500 ${
+                    className={`w-full bg-transparent border-b-[8px] border-white/10 pb-6 text-2xl md:text-6xl font-black text-center focus:outline-none transition-all uppercase placeholder:opacity-5 focus:border-cyan-500 ${
                       streak >= 5
-                        ? "text-yellow-400 border-yellow-400 shadow-[0_15px_40px_rgba(234,179,8,0.2)]"
+                        ? "text-yellow-400 border-yellow-400 shadow-[0_30px_100px_rgba(234,179,8,0.3)]"
                         : "text-white"
                     }`}
                     placeholder={isValidating ? "SCAN..." : "INPUT..."}
@@ -1129,9 +1130,9 @@ export default function App() {
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0 }}
-                        className="absolute -top-12 md:-top-20 left-0 right-0 flex items-center justify-center gap-4 text-cyan-400 font-black italic tracking-[0.3em] text-sm md:text-lg uppercase bg-cyan-500/10 py-3 md:py-4 rounded-[2rem] border-2 border-cyan-500/20 backdrop-blur-xl shadow-[0_0_40px_rgba(6,182,212,0.3)] uppercase tracking-widest text-center text-center text-center text-center text-center"
+                        className="absolute -top-16 left-0 right-0 flex items-center justify-center gap-6 text-cyan-400 font-black italic tracking-[0.5em] text-lg uppercase bg-cyan-500/10 py-5 rounded-[3rem] border-4 border-cyan-500/30 backdrop-blur-3xl shadow-2xl text-center text-center text-white"
                       >
-                        <Loader2 className="animate-spin w-5 h-5 md:w-8 md:h-8" />{" "}
+                        <Loader2 className="animate-spin w-8 h-8" />{" "}
                         Verifying_Synapse
                       </motion.div>
                     )}
@@ -1139,10 +1140,10 @@ export default function App() {
                       <motion.div
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="absolute -top-12 md:-top-20 left-0 right-0 text-yellow-400 font-black italic text-sm md:text-2xl animate-pulse flex items-center justify-center gap-3 uppercase font-black tracking-widest leading-none uppercase tracking-widest text-center text-center text-center text-center text-center"
+                        className="absolute -top-16 left-0 right-0 text-yellow-400 font-black italic text-lg md:text-4xl animate-pulse flex items-center justify-center gap-6 uppercase font-black tracking-widest leading-none text-center text-center text-white"
                       >
                         <Flame
-                          className="w-6 h-6 md:w-10 md:h-10"
+                          className="w-10 h-10 md:w-14 md:h-14"
                           fill="currentColor"
                         />{" "}
                         {String(stats.tier)} | {String(stats.multiplier)}X_GAIN
@@ -1150,20 +1151,20 @@ export default function App() {
                     )}
                   </AnimatePresence>
                 </form>
-                <div className="mt-8 md:mt-12 flex flex-wrap justify-center gap-3 md:gap-6 py-6 px-4 md:px-10 text-white text-center pb-60 text-center text-center">
+                <div className="mt-12 flex flex-wrap justify-center gap-4 py-8 px-4 text-white text-center pb-60 text-center">
                   <AnimatePresence mode="popLayout">
                     {answers.map((w, idx) => (
                       <motion.div
                         key={w + idx}
                         layout
-                        initial={{ scale: 0, y: 30 }}
+                        initial={{ scale: 0, y: 50 }}
                         animate={{ scale: 1, y: 0 }}
-                        className="px-5 md:px-8 py-2 md:py-4 bg-white/5 border border-white/10 rounded-[2rem] text-lg md:text-2xl font-black text-white/80 flex items-center gap-3 backdrop-blur-md shadow-lg border-b-4 uppercase tracking-widest italic leading-none"
+                        className="px-8 py-3 bg-white/5 border-2 border-white/10 rounded-[3rem] text-xl md:text-2xl font-black text-white/90 flex items-center gap-5 backdrop-blur-3xl shadow-2xl border-b-[8px] uppercase tracking-widest italic leading-none"
                         style={{ borderColor: currentPrompt.color }}
                       >
                         <Binary
-                          size={20}
-                          className="text-cyan-400 opacity-30"
+                          size={32}
+                          className="text-cyan-400 opacity-50"
                         />{" "}
                         {String(w).toUpperCase()}
                       </motion.div>
@@ -1175,29 +1176,28 @@ export default function App() {
           )}
         </main>
 
-        {/* Footer */}
-        <footer className="sticky bottom-0 p-3 md:p-6 bg-slate-900/90 border-t border-white/10 flex flex-wrap justify-between items-center backdrop-blur-3xl z-50 gap-4 text-left text-left">
-          <div className="space-y-1 text-left text-white text-left text-left text-left text-left">
+        <footer className="sticky bottom-0 p-6 md:p-12 bg-slate-900/90 border-t-2 border-white/10 flex flex-wrap justify-between items-end backdrop-blur-3xl z-50 gap-6 text-left text-white">
+          <div className="space-y-2 text-left text-white text-left text-left text-left">
             {logs.map((log, i) => (
               <motion.div
                 key={i}
-                initial={{ x: -10 }}
+                initial={{ x: -20 }}
                 animate={{ x: 0 }}
-                className={`text-[10px] md:text-[12px] font-black tracking-widest ${
-                  i === 0 ? "text-cyan-400" : "text-white/20"
+                className={`text-[12px] md:text-[16px] font-black tracking-widest ${
+                  i === 0 ? "text-cyan-400" : "text-white/30"
                 }`}
               >
                 {`> ${String(log)}`}
               </motion.div>
             ))}
           </div>
-          <div className="text-right flex items-center gap-6 text-white/20 text-left text-left text-left text-left">
-            <div className="hidden lg:block text-[11px] font-black uppercase tracking-[0.5em] italic leading-none uppercase tracking-widest text-left text-left text-left text-left text-left">
-              Terminal_Arch_V12.0_Scaled
+          <div className="text-right flex items-center gap-10 text-white/20 text-left text-left text-white">
+            <div className="hidden lg:block text-[14px] font-black uppercase tracking-[0.8em] italic leading-none uppercase text-left text-left text-white">
+              Terminal_Arch_V12.0_Final
             </div>
-            <div className="flex items-center gap-4 text-left text-left text-left">
-              <Command size={24} />
-              <HardDrive size={24} />
+            <div className="flex items-center gap-6 text-left text-left text-white">
+              <Command size={32} />
+              <HardDrive size={32} />
             </div>
           </div>
         </footer>
@@ -1206,12 +1206,12 @@ export default function App() {
       {/* Help Modal Overlay */}
       <AnimatePresence>
         {showHelp && (
-          <div className="fixed inset-0 z-[70] bg-black/90 backdrop-blur-xl flex items-center justify-center p-6 overflow-y-auto text-left text-left text-left">
+          <div className="fixed inset-0 z-[70] bg-black/90 backdrop-blur-xl flex items-center justify-center p-6 overflow-y-auto text-left text-left text-left text-white">
             <motion.div
               initial={{ scale: 0.9 }}
               animate={{ scale: 1 }}
               exit={{ scale: 0.9 }}
-              className="bg-slate-900 border border-white/20 p-8 md:p-12 rounded-[3rem] max-w-2xl w-full relative shadow-3xl my-auto text-left text-left text-left text-left"
+              className="bg-slate-900 border border-white/20 p-8 md:p-12 rounded-[3rem] max-w-2xl w-full relative shadow-3xl my-auto text-left text-left text-left text-left text-white"
             >
               <button
                 onClick={() => setShowHelp(false)}
@@ -1219,10 +1219,10 @@ export default function App() {
               >
                 <X size={32} />
               </button>
-              <h2 className="text-4xl font-black italic uppercase text-cyan-400 mb-8 flex items-center gap-4 text-left text-left text-left text-left text-left">
+              <h2 className="text-4xl font-black italic uppercase text-cyan-400 mb-8 flex items-center gap-4 text-left text-left text-left text-left text-left text-white">
                 <HelpCircle size={40} /> Protocol_Guide
               </h2>
-              <div className="space-y-6 text-lg md:text-xl text-white/80 leading-relaxed font-bold italic text-left text-left text-left text-left text-left">
+              <div className="space-y-6 text-lg md:text-xl text-white/80 leading-relaxed font-bold italic text-left text-left text-left text-left text-left text-white">
                 <p>{">"} ENTER A SECTOR AND DECODE THE TARGET CATEGORY.</p>
                 <p>{">"} TYPE VALID WORDS TO RECOVER NEURAL DATA.</p>
                 <p>{">"} STREAKS INCREASE MULTIPLIERS (UP TO 5X).</p>
@@ -1239,21 +1239,20 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      {/* Game Over Screen */}
       <AnimatePresence>
         {gameState === "GAMEOVER" && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] bg-[#020512]/98 flex flex-col items-center justify-start p-6 md:p-12 overflow-y-auto scroll-smooth text-white text-center text-center text-center text-center"
+            className="fixed inset-0 z-[100] bg-[#020512]/98 flex flex-col items-center justify-start p-6 md:p-12 overflow-y-auto scroll-smooth text-white text-center text-center text-center text-center text-white"
           >
             <motion.div
               initial={{ scale: 1.1, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              className="text-center space-y-8 md:space-y-16 max-w-6xl w-full py-8 md:py-16 pb-60 text-center text-center text-center text-center text-center text-center"
+              className="text-center space-y-8 md:space-y-16 max-w-6xl w-full py-8 md:py-16 pb-60 text-center text-center text-center text-center text-center text-center text-white"
             >
-              <div className="relative inline-block px-10 text-center text-center text-center text-center text-center">
+              <div className="relative inline-block px-10 text-center text-center text-center text-center text-center text-white">
                 <motion.h2
                   animate={{ skewX: [-10, 10] }}
                   transition={{
@@ -1261,83 +1260,83 @@ export default function App() {
                     repeat: Infinity,
                     repeatType: "mirror",
                   }}
-                  className="text-red-500 text-5xl md:text-[12vw] font-black italic uppercase tracking-tighter drop-shadow-[0_0_60px_rgba(255,0,0,0.8)] leading-none text-center tracking-tighter text-center text-center text-center text-center"
+                  className="text-red-500 text-5xl md:text-[12vw] font-black italic uppercase tracking-tighter drop-shadow-[0_0_60px_rgba(255,0,0,0.8)] leading-none text-center tracking-tighter text-center text-center text-center text-center text-white"
                 >
                   SIGNAL_LOST
                 </motion.h2>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-20 items-center text-left text-white text-left text-left text-left text-left text-left">
-                <div className="space-y-10 md:space-y-16 text-left text-left text-left text-left text-left">
-                  <div className="flex flex-col sm:flex-row items-center gap-8 bg-white/5 p-6 md:p-10 rounded-[3rem] md:rounded-[7rem] border border-white/10 shadow-2xl text-center sm:text-left backdrop-blur-md text-white text-left text-left text-left text-left text-left text-left">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-20 items-center text-left text-white text-left text-left text-left text-left text-left text-white">
+                <div className="space-y-10 md:space-y-16 text-left text-left text-left text-left text-left text-white">
+                  <div className="flex flex-col sm:flex-row items-center gap-8 bg-white/5 p-6 md:p-10 rounded-[3rem] md:rounded-[7rem] border border-white/10 shadow-2xl text-center sm:text-left backdrop-blur-md text-white text-left text-left text-left text-left text-left text-left text-white">
                     <PlayerAvatar
                       seed={String(username)}
                       size={100}
-                      className="border-red-600 border-4 shadow-3xl text-left text-left text-left"
+                      className="border-red-600 border-4 shadow-3xl text-left text-left text-left text-white"
                     />
-                    <div className="flex-1 text-left text-left text-left text-left text-left">
-                      <div className="text-[12px] md:text-[14px] font-black text-white/20 uppercase tracking-[0.4em] mb-1.5 uppercase tracking-widest text-left text-left text-left text-left text-left">
+                    <div className="flex-1 text-left text-left text-left text-left text-left text-white">
+                      <div className="text-[12px] md:text-[14px] font-black text-white/20 uppercase tracking-[0.4em] mb-1.5 uppercase tracking-widest text-left text-left text-left text-left text-left text-white">
                         Operator_Index
                       </div>
-                      <div className="text-4xl md:text-6xl font-black text-red-500 uppercase italic tracking-tighter leading-none mb-3 text-left text-left text-left text-left text-left">
+                      <div className="text-4xl md:text-6xl font-black text-red-500 uppercase italic tracking-tighter leading-none mb-3 text-left text-left text-left text-left text-left text-white">
                         {String(username || "UNKNOWN")}
                       </div>
-                      <div className="inline-flex items-center gap-2 bg-red-600/20 text-red-500 border border-red-500/30 px-4 py-1 rounded-full font-black text-[10px] uppercase tracking-widest animate-pulse text-left text-left text-left text-left text-left text-left">
+                      <div className="inline-flex items-center gap-2 bg-red-600/20 text-red-500 border border-red-500/30 px-4 py-1 rounded-full font-black text-[10px] uppercase tracking-widest animate-pulse text-left text-left text-left text-left text-left text-left text-white">
                         Disconnected
                       </div>
                     </div>
                   </div>
 
-                  <div className="space-y-6 md:space-y-10 px-4 text-left text-left text-left text-left text-left">
-                    <div className="flex flex-col sm:flex-row justify-between sm:items-end border-b-2 border-white/5 pb-6 group text-left text-left text-left text-left text-left">
-                      <span className="text-sm md:text-xl font-black text-white/15 uppercase tracking-[0.3em] transition-colors group-hover:text-cyan-400 uppercase tracking-widest text-left text-left text-left text-left text-left">
+                  <div className="space-y-6 md:space-y-10 px-4 text-left text-left text-left text-left text-left text-white">
+                    <div className="flex flex-col sm:flex-row justify-between sm:items-end border-b-2 border-white/5 pb-6 group text-left text-left text-left text-left text-left text-white">
+                      <span className="text-sm md:text-xl font-black text-white/15 uppercase tracking-[0.3em] transition-colors group-hover:text-cyan-400 uppercase tracking-widest text-left text-left text-left text-left text-left text-white">
                         Archive_Result
                       </span>
-                      <span className="text-5xl md:text-8xl font-black text-white tabular-nums tracking-tighter leading-none drop-shadow-xl text-left text-left text-left text-left text-left">
+                      <span className="text-5xl md:text-8xl font-black text-white tabular-nums tracking-tighter leading-none drop-shadow-xl text-left text-left text-left text-left text-left text-white">
                         {String(score)}
                       </span>
                     </div>
-                    <div className="flex flex-col sm:flex-row justify-between sm:items-end border-b-2 border-white/5 pb-6 group text-left text-left text-left text-left text-left text-left">
-                      <span className="text-sm md:text-xl font-black text-white/15 uppercase tracking-[0.3em] transition-colors group-hover:text-yellow-400 uppercase tracking-widest text-left text-left text-left text-left text-left text-left">
+                    <div className="flex flex-col sm:flex-row justify-between sm:items-end border-b-2 border-white/5 pb-6 group text-left text-left text-left text-left text-left text-left text-white">
+                      <span className="text-sm md:text-xl font-black text-white/15 uppercase tracking-[0.3em] transition-colors group-hover:text-yellow-400 uppercase tracking-widest text-left text-left text-left text-left text-left text-left text-white text-white">
                         Peak_Synapse
                       </span>
-                      <span className="text-7xl md:text-8xl font-black text-yellow-500 tabular-nums tracking-tighter leading-none drop-shadow-xl text-left text-left text-left text-left text-left text-left text-left">
+                      <span className="text-7xl md:text-8xl font-black text-yellow-500 tabular-nums tracking-tighter leading-none drop-shadow-xl text-left text-left text-left text-left text-left text-left text-left text-white">
                         {String(streak)}x
                       </span>
                     </div>
                   </div>
                 </div>
 
-                <div className="bg-slate-900/90 p-8 md:p-16 rounded-[4rem] border-l-[16px] md:border-l-[32px] border-red-700 backdrop-blur-3xl shadow-3xl border border-white/10 text-left relative overflow-hidden text-white text-left text-left text-left text-left text-left">
-                  <div className="relative z-10 text-left text-left text-left text-left text-left">
-                    <div className="flex items-center justify-between mb-12 border-b border-white/10 pb-6 uppercase italic text-sm md:text-base uppercase tracking-widest text-left text-white text-left text-left text-left text-left text-left text-left text-left">
-                      <p className="text-white/30 font-black tracking-[0.6em] uppercase text-xs md:text-sm italic uppercase text-left text-left text-left text-left text-left">
+                <div className="bg-slate-900/90 p-8 md:p-16 rounded-[4rem] border-l-[16px] md:border-l-[32px] border-red-700 backdrop-blur-3xl shadow-3xl border border-white/10 text-left relative overflow-hidden text-white text-left text-left text-left text-left text-left text-white">
+                  <div className="relative z-10 text-left text-left text-left text-left text-left text-white">
+                    <div className="flex items-center justify-between mb-12 border-b border-white/10 pb-6 uppercase italic text-sm md:text-base uppercase tracking-widest text-left text-white text-left text-left text-left text-left text-left text-left text-left text-white">
+                      <p className="text-white/30 font-black tracking-[0.6em] uppercase text-xs md:text-sm italic uppercase text-left text-left text-left text-left text-left text-white">
                         Session_Analysis
                       </p>
                       <Sparkles className="text-white/10" size={24} />
                     </div>
-                    <p className="text-[10px] font-black text-white/15 uppercase tracking-[0.8em] mb-3 uppercase tracking-widest text-white/40 text-left text-left text-left text-left text-left text-left">
+                    <p className="text-[10px] font-black text-white/15 uppercase tracking-[0.8em] mb-3 uppercase tracking-widest text-white/40 text-left text-left text-left text-left text-left text-left text-white">
                       Classification
                     </p>
-                    <p className="text-4xl md:text-7xl font-black text-white italic tracking-tighter uppercase leading-none mb-12 drop-shadow-2xl uppercase text-left tracking-tighter text-white text-left text-left text-left text-left text-left text-left">
+                    <p className="text-4xl md:text-7xl font-black text-white italic tracking-tighter uppercase leading-none mb-12 drop-shadow-2xl uppercase text-left tracking-tighter text-white text-left text-left text-left text-left text-left text-left text-white">
                       {score >= 8000
                         ? "NEURAL_GOD"
                         : score >= 4000
                         ? "SYNC_ELITE"
                         : "DATA_GHOST"}
                     </p>
-                    <div className="flex items-center gap-8 pt-10 border-t border-white/5 text-left text-left text-left text-left text-left text-left">
-                      <div className="p-5 md:p-6 bg-cyan-600/20 rounded-[2rem] border-2 border-cyan-500/20 shadow-xl text-white text-left text-left text-left">
+                    <div className="flex items-center gap-8 pt-10 border-t border-white/5 text-left text-left text-left text-left text-left text-left text-white">
+                      <div className="p-5 md:p-6 bg-cyan-600/20 rounded-[2rem] border-2 border-cyan-500/20 shadow-xl text-white text-left text-left text-left text-white">
                         <Trophy
                           size={40}
                           className="text-cyan-400 animate-bounce"
                         />
                       </div>
-                      <div className="text-left text-left text-left text-left text-left">
-                        <div className="text-[10px] md:text-[12px] font-black text-white/20 uppercase tracking-[0.3em] mb-1.5 uppercase tracking-widest text-white/40 text-left text-left text-left text-left text-left text-left">
+                      <div className="text-left text-left text-left text-left text-left text-white">
+                        <div className="text-[10px] md:text-[12px] font-black text-white/20 uppercase tracking-[0.3em] mb-1.5 uppercase tracking-widest text-white/40 text-left text-left text-left text-left text-left text-left text-white">
                           Global_Peak
                         </div>
-                        <div className="text-3xl md:text-5xl font-black text-cyan-400 italic uppercase tabular-nums tracking-tight drop-shadow-lg text-left text-left text-left text-left text-left text-left">
+                        <div className="text-3xl md:text-5xl font-black text-cyan-400 italic uppercase tabular-nums tracking-tight drop-shadow-lg text-left text-left text-left text-left text-left text-left text-white">
                           {String(highScore)}
                         </div>
                       </div>
@@ -1346,19 +1345,19 @@ export default function App() {
                 </div>
               </div>
 
-              <div className="flex flex-col md:flex-row gap-6 md:gap-10 justify-center pt-16 pb-40 text-center text-center text-center text-center text-center text-center">
+              <div className="flex flex-col md:flex-row gap-6 md:gap-10 justify-center pt-16 pb-40 text-center text-center text-center text-center text-center text-center text-white">
                 <button
                   onClick={() => window.location.reload()}
-                  className="group relative px-12 md:px-20 py-8 md:py-12 bg-white text-black font-black text-xl md:text-4xl hover:bg-red-600 hover:text-white transition-all skew-x-[-12deg] shadow-[20px_20px_0px_#000] active:translate-x-3 active:translate-y-3 active:shadow-none uppercase italic overflow-hidden text-center text-center text-center text-center"
+                  className="group relative px-12 md:px-20 py-8 md:py-12 bg-white text-black font-black text-xl md:text-4xl hover:bg-red-600 hover:text-white transition-all skew-x-[-12deg] shadow-[20px_20px_0px_#000] active:translate-x-3 active:translate-y-3 active:shadow-none uppercase italic overflow-hidden text-center text-center text-center text-center text-center text-center text-white"
                 >
-                  <span className="relative z-10 flex items-center gap-5 md:gap-8 uppercase font-black font-black italic tracking-widest text-center text-center text-center text-center text-center">
+                  <span className="relative z-10 flex items-center gap-5 md:gap-8 uppercase font-black font-black italic tracking-widest text-center text-center text-center text-center text-center text-center text-white">
                     RE-INITIALIZE <Zap size={32} fill="currentColor" />
                   </span>
                 </button>
 
                 <button
                   onClick={handleShareResult}
-                  className="px-10 md:px-16 py-8 md:py-12 border-4 border-cyan-500/30 font-black text-lg md:text-3xl hover:bg-cyan-500 hover:text-white transition-all skew-x-[-12deg] uppercase italic text-cyan-400 tracking-widest shadow-xl text-center text-center text-center text-center"
+                  className="px-10 md:px-16 py-8 md:py-12 border-4 border-cyan-500/30 font-black text-lg md:text-3xl hover:bg-cyan-500 hover:text-white transition-all skew-x-[-12deg] uppercase italic text-cyan-400 tracking-widest shadow-xl text-center text-center text-center text-center text-white"
                 >
                   SHARE_RESULT <Share2 className="inline ml-2" />
                 </button>
